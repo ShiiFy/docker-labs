@@ -1,6 +1,28 @@
-@OrderService_HostAddress = http://localhost:5100
-
-GET {{OrderService_HostAddress}}/weatherforecast/
-Accept: application/json
+### Получить все заказы
+GET http://localhost:5002/orders
 
 ###
+
+### Создать заказ с существующим товаром (ID=1 есть в ProductService)
+POST http://localhost:5002/orders
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "quantity": 2,
+  "customerName": "Иван Иванов",
+  "status": "Новый"
+}
+
+###
+
+### Создать заказ с несуществующим товаром (ID=999 нет в ProductService)
+POST http://localhost:5002/orders
+Content-Type: application/json
+
+{
+  "productId": 999,
+  "quantity": 1,
+  "customerName": "Тест Тестов",
+  "status": "Новый"
+}
