@@ -70,10 +70,8 @@ public static class ProductEndpoints
 
     public static void MapProductEndpoints(this WebApplication app)
     {
-        // GET — все товары
         app.MapGet("/products", () => Results.Ok(Products));
 
-        // GET — товары по категории
         app.MapGet("/products/category/{category}", (string category) =>
         {
             var filtered = Products.Where(p => p.Category == category).ToList();
@@ -82,7 +80,6 @@ public static class ProductEndpoints
                 : Results.NotFound($"Товары категории '{category}' не найдены");
         });
 
-        // GET — один товар по ID
         app.MapGet("/products/{id}", (int id) =>
         {
             var product = Products.FirstOrDefault(p => p.Id == id);
@@ -91,7 +88,6 @@ public static class ProductEndpoints
                 : Results.NotFound($"Товар с ID {id} не найден");
         });
 
-        // POST — добавить товар
         app.MapPost("/products", (Product newProduct) =>
         {
             newProduct.Id = Products.Count > 0 ? Products.Max(p => p.Id) + 1 : 1;
@@ -99,7 +95,6 @@ public static class ProductEndpoints
             return Results.Created($"/products/{newProduct.Id}", newProduct);
         });
 
-        // PUT — обновить товар
         app.MapPut("/products/{id}", (int id, Product updatedProduct) =>
         {
             var product = Products.FirstOrDefault(p => p.Id == id);
@@ -114,7 +109,6 @@ public static class ProductEndpoints
             return Results.Ok(product);
         });
 
-        // DELETE — удалить товар
         app.MapDelete("/products/{id}", (int id) =>
         {
             var product = Products.FirstOrDefault(p => p.Id == id);

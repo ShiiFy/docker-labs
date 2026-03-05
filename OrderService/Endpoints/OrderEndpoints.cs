@@ -10,15 +10,12 @@ public static class OrderEndpoints
         new Order { Id = 2, ProductId = 2, Quantity = 1, CustomerName = "Мария Петрова", Status = "Новый" }
     };
 
-    // Адрес ProductService — по этому адресу OrderService будет к нему обращаться
     private static readonly string ProductServiceUrl = "http://productservice:8080";
 
     public static void MapOrderEndpoints(this WebApplication app)
     {
-        // GET — все заказы
         app.MapGet("/orders", () => Results.Ok(Orders));
 
-        // GET — один заказ по ID
         app.MapGet("/orders/{id}", (int id) =>
         {
             var order = Orders.FirstOrDefault(o => o.Id == id);
@@ -27,13 +24,10 @@ public static class OrderEndpoints
                 : Results.NotFound($"Заказ с ID {id} не найден");
         });
 
-        // POST — создать заказ
-        // Здесь OrderService идёт к ProductService и проверяет товар!
         app.MapPost("/orders", async (Order newOrder, IHttpClientFactory httpClientFactory) =>
         {
             var client = httpClientFactory.CreateClient();
 
-            // Проверяем — существует ли товар с таким ID в ProductService
             var response = await client.GetAsync($"{ProductServiceUrl}/products/{newOrder.ProductId}");
 
             if (!response.IsSuccessStatusCode)
@@ -45,7 +39,6 @@ public static class OrderEndpoints
             return Results.Created($"/orders/{newOrder.Id}", newOrder);
         });
 
-        // PUT — обновить заказ
         app.MapPut("/orders/{id}", (int id, Order updatedOrder) =>
         {
             var order = Orders.FirstOrDefault(o => o.Id == id);
@@ -59,7 +52,6 @@ public static class OrderEndpoints
             return Results.Ok(order);
         });
 
-        // DELETE — удалить заказ
         app.MapDelete("/orders/{id}", (int id) =>
         {
             var order = Orders.FirstOrDefault(o => o.Id == id);
